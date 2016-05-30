@@ -1,3 +1,7 @@
+#include <cmath>
+#include <iostream> // input/output streams
+#include <fstream>  // file streams
+#include <sstream>  // string streams
 #include <string>
 #include <stdexcept>
 #include <vector>
@@ -28,20 +32,29 @@ void Terrain::createDisplayListTile() {
 
 
 	// TODO
-	glBegin(GL_QUAD);
+	glBegin(GL_QUADS);
   glNormal3f(0.0, .0, 01.0);
-  glTexCoord(0.0, 0.0);
-  glVertex3f(-5.0, -5.0, 0.0);
-  glTexCoord(0.0, 1.0);
-  glVertex3f(-5.0, 5.0, 0.0);
-  glTexCoord(1.0, 1.0);
-  glVertex3f(5.0, 5.0, 0.0);
-  glTexCoord(1.0, 0.0);
-  glVertex3f(5.0, -5.0, 0.0);
+  glTexCoord2f(0.0, 0.0);
+  glVertex3f(-5.0, -0.0, -5.0);
+  glTexCoord2f(0.0, 1.0);
+  glVertex3f(-5.0, 0.0, 5.0);
+  glTexCoord2f(1.0, 1.0);
+  glVertex3f(5.0, 0.0, 5.0);
+  glTexCoord2f(1.0, 0.0);
+  glVertex3f(5.0, 0.0, -5.0);
 	glEnd();
 	glEndList();
 
 	cout << "Finished Creating Terrain Tile" << endl;
+}
+
+void Terrain::renderTerrain(){
+ glDisable(GL_COLOR_MATERIAL);
+ glEnable(GL_TEXTURE_2D);
+ glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+ glCallList(m_displayListPoly);
+ glDisable(GL_TEXTURE_2D);
+ glEnable(GL_COLOR_MATERIAL);
 }
 
 float Terrain::noise3(vec3 point){
@@ -113,12 +126,3 @@ float Terrain::noise3(vec3 point){
    }
    return result;
  } /* RidgedMultifractal() */
-
- void renderTerrain(){
-  glDisable(GL_COLOR_MATERIAL);
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glCallList(m_displayListPoly);
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_COLOR_MATERIAL);
-}

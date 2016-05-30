@@ -22,6 +22,7 @@
 #include "simple_image.hpp"
 #include "simple_shader.hpp"
 #include "opengl.hpp"
+#include "terrain.hpp"
 
 using namespace std;
 using namespace cgra;

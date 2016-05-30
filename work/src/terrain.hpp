@@ -15,6 +15,8 @@ struct tile{
 
 class Terrain {
 private:
+  GLuint m_displayListPoly; // DisplayList for Polygon
+
   float ridgedMultifractal(cgra::vec3, float, float, float, float, float);
   float noise3(cgra::vec3);
   void createDisplayListTile();
@@ -22,5 +24,6 @@ private:
 public:
   Terrain(std::string);
   ~Terrain();
+
   void renderTerrain();
 };
