@@ -10,8 +10,38 @@
 using namespace std;
 using namespace cgra;
 
-Terrain::Terrain(){
+Terrain::Terrain(string temp){
+  createDisplayListTile();
+}
 
+Terrain::~Terrain() {}
+
+void Terrain::createDisplayListTile() {
+
+	// Delete old list if there is one
+	if (m_displayListPoly) glDeleteLists(m_displayListPoly, 1);
+
+	// Create a new list
+	cout << "Creating Terrain Tile" << endl;
+	m_displayListPoly = glGenLists(1);
+	glNewList(m_displayListPoly, GL_COMPILE);
+
+
+	// TODO
+	glBegin(GL_QUAD);
+  glNormal3f(0.0, .0, 01.0);
+  glTexCoord(0.0, 0.0);
+  glVertex3f(-5.0, -5.0, 0.0);
+  glTexCoord(0.0, 1.0);
+  glVertex3f(-5.0, 5.0, 0.0);
+  glTexCoord(1.0, 1.0);
+  glVertex3f(5.0, 5.0, 0.0);
+  glTexCoord(1.0, 0.0);
+  glVertex3f(5.0, -5.0, 0.0);
+	glEnd();
+	glEndList();
+
+	cout << "Finished Creating Terrain Tile" << endl;
 }
 
 float Terrain::noise3(vec3 point){
@@ -83,3 +113,12 @@ float Terrain::noise3(vec3 point){
    }
    return result;
  } /* RidgedMultifractal() */
+
+ void renderTerrain(){
+  glDisable(GL_COLOR_MATERIAL);
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glCallList(m_displayListPoly);
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_COLOR_MATERIAL);
+}

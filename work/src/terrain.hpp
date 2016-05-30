@@ -17,7 +17,10 @@ class Terrain {
 private:
   float ridgedMultifractal(cgra::vec3, float, float, float, float, float);
   float noise3(cgra::vec3);
+  void createDisplayListTile();
 
 public:
-  Terrain();
+  Terrain(std::string);
+  ~Terrain();
+  void renderTerrain();
 };

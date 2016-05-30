@@ -30,7 +30,7 @@ using namespace cgra;
 //
 GLFWwindow* g_window;
 
-
+Terrain *g_terrain= nullptr;
 
 // Projection values
 //
@@ -118,8 +118,8 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 }
 
 
-void initGenometry() {
-
+void initTerrain() {
+	g_terrain = new Terrain("fred");
 }
 
 // Sets up where and what the light is
@@ -211,6 +211,7 @@ void render(int width, int height) {
 	setupCamera(width, height);
 
 	//Render Terrain
+	g_terrain->renderTerrain();
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
@@ -290,7 +291,7 @@ int main(int argc, char **argv) {
 		cout << "GL_ARB_debug_output not available. No worries." << endl;
 	}
 
-	initGenometry();
+	initTerrain();
 	initLight();
 	initTexture();
 	initShader();
