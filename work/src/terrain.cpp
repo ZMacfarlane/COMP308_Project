@@ -14,7 +14,7 @@
 using namespace std;
 using namespace cgra;
 
-Terrain::Terrain(string temp){
+Terrain::Terrain(vec2 tile){
   createDisplayListTile();
 }
 
@@ -30,10 +30,89 @@ void Terrain::createDisplayListTile() {
 	m_displayListPoly = glGenLists(1);
 	glNewList(m_displayListPoly, GL_COMPILE);
 
+  float x = tileSize;
+  float y = tileSize;
 
+  float terrain[64][64][3];
+  for(int i = 0; i < x; i++){
+    for(int j = 0; j < y; j++){
+      terrain[i][j][0] = float(i);
+      terrain[i][j][1] = rand() % 3;
+      terrain[i][j][2] = float(j);
+    }
+  }
+glNormal3f(0.0, 0.0, 1.0);
+  for(int j = 0; j < x-1; j++){
+    //glBegin(GL_TRIANGLE_STRIP);
+    glBegin(GL_QUADS)
+    for(int i = 0; i < y-1; i++){
+      glTexCoord2f(0.0f, 0.0f);
+      glVertex3f(terrain[i][j][0], terrain[i][j][1], terrain[i][j][2]);
+
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex3f(terrain[i+1][j][0], terrain[i+1][j][1], terrain[i+1][j][2]);
+
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3f(terrain[i][j+1][0], terrain[i][j+1][1], terrain[i][j+1][2]);
+
+      glTexCoord2f(1.0f, 1.0f);
+      glVertex3f(terrain[i+1][j+1][0], terrain[i+1][j+1][1], terrain[i+1][j+1][2]);
+    }
+    glEnd();
+  }
+  glEndList();
+
+  float a = 0;
+  float b = 0;
+  float c = 0;
+  float d = 0;
+
+/*
+  //glBegin(GL_TRIANGLES);
+  glBegin(GL_QUAD_STRIP);
+  for(float i = 0.0f; i < x; i++){
+    for(float j = 0.0f; j < y; j++){
+      glNormal3f(0.0, 0.0, 1.0);
+
+      glTexCoord2f((1.0 / (x-1)) * i, (1.0 / (y-1)) * j);
+      glVertex3f(i, 0.0, j);
+      //glVertex3f(i, a, j);
+      //glVertex3f(i, rand() % 10, j);
+      //a += rand() % 3;
+
+      glTexCoord2f((1.0 / (x-1)) * i, (1.0 / (y-1)) * j+1);
+      glVertex3f(i, 0.0, j+1);
+      //glVertex3f(i, b, j+1);
+      //glVertex3f(i, rand() % 10, j+1);
+      //b += rand() % 3;
+
+
+
+      glTexCoord2f((1.0 / (x-1)) * i+1, (1.0 / (y-1)) * j+1);
+      glVertex3f(i+1, 0.0, j+1);
+      //glVertex3f(i+1, c, j+1);
+      //glVertex3f(i+1, rand() % 10, j+1);
+      //c += rand() % 3;
+
+
+
+      glTexCoord2f((1.0 / (x-1)) * i+1, (1.0 / (y-1)) * j);
+      glVertex3f(i+1, 0.0, j);
+      //glVertex3f(i+1, d, j);
+      //glVertex3f(i+1, rand() % 10, j);
+      //d += rand() % 3;
+
+
+    }
+  }
+  glEnd();
+  glEndList();
+  */
+
+/*
 	// TODO
 	glBegin(GL_QUADS);
-  glNormal3f(0.0, .0, 01.0);
+  glNormal3f(0.0, 0.0, 1.0);
   glTexCoord2f(0.0, 0.0);
   glVertex3f(-5.0, -0.0, -5.0);
   glTexCoord2f(0.0, 1.0);
@@ -44,7 +123,7 @@ void Terrain::createDisplayListTile() {
   glVertex3f(5.0, 0.0, -5.0);
 	glEnd();
 	glEndList();
-
+*/
 	cout << "Finished Creating Terrain Tile" << endl;
 }
 

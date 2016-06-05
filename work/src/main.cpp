@@ -43,9 +43,9 @@ float g_zfar = 1000.0;
 // Mouse controlled Camera values
 //
 bool g_leftMouseDown = false;
-vec2 g_mousePosition;
-float g_pitch = 0;
-float g_yaw = 0;
+vec2 g_mousePosition = vec2(30, 15);
+float g_pitch = 30.0;
+float g_yaw = 15;
 float g_zoom = 1.0;
 
 // Values and fields to showcase the use of shaders
@@ -120,7 +120,7 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 
 
 void initTerrain() {
-	g_terrain = new Terrain("fred");
+	g_terrain = new Terrain(vec2(0, 0));
 }
 
 // Sets up where and what the light is
@@ -213,6 +213,18 @@ void render(int width, int height) {
 
 	//Render Terrain
 	g_terrain->renderTerrain();
+
+	glTranslatef(-63, 0, 0);
+	g_terrain->renderTerrain();
+	glTranslatef(63, 0, 0);
+
+	glTranslatef(-63, 0, -63);
+	g_terrain->renderTerrain();
+	glTranslatef(63, 0, 63);
+
+	glTranslatef(0, 0, -63);
+	g_terrain->renderTerrain();
+	glTranslatef(0, 0, 63);
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
