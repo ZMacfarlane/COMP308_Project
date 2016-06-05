@@ -225,11 +225,12 @@ void render(int width, int height) {
 	glTranslatef(0, 0, -63);
 	g_terrain->renderTerrain();
 	glTranslatef(0, 0, 63);
-
+	
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_NORMALIZE);
+
 }
 
 
