@@ -15,6 +15,19 @@ struct tile{
   int y = 0; //positiion of tile along y-axis
 };
 
+/*
+struct vertex {
+	int p = 0; // index for point in m_points
+	int t = 0; // index for uv in m_uvs
+	int n = 0; // index for normal in m_normals
+};
+*/
+
+struct triangle {
+	// vertex v[3]; //requires 3 verticies
+  float v[3];
+};
+
 class Terrain {
 private:
   GLuint m_displayListPoly; // DisplayList for Polygon

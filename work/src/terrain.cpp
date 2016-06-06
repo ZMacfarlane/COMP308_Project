@@ -32,50 +32,81 @@ void Terrain::createDisplayListTile() {
 
   float x = tileSize;
   float y = tileSize;
-  int fred;
   float height;
 
-  float terrain[64][64][3];
+  // float terrain[64][64][3];
+  triangle verts[64][64];
+
   for(int i = 0; i < x; i++){
     for(int j = 0; j < y; j++){
-      //fred = rand() % 4;
-      height = ((float)rand()/(float)(RAND_MAX)) * 4;
-      //height = float(fred);
-      cout << height << endl;
-      //height = (float)fred
-      terrain[i][j][0] = float(i);
-      terrain[i][j][1] = height;
-      terrain[i][j][2] = float(j);
-      //cout << height << endl;
+      height = ((float)rand()/(float)(RAND_MAX)) * 5;
+
+      triangle tri;
+      tri.v[0] = float(i);
+      tri.v[1] = height;
+      tri.v[2] = float(j);
+      verts[i][j] = tri;
+
     }
   }
-glNormal3f(0.0, 0.0, 1.0);
+vec3 u;
+vec3 v;
+vec3 normal;
+glBegin(GL_TRIANGLES);
   for(int j = 0; j < x-1; j++){
-    glBegin(GL_TRIANGLE_STRIP);
-    //glBegin(GL_QUADS);
     for(int i = 0; i < y-1; i++){
-      //glColor3f(terrain[i][j][1]/255.0f, terrain[i][j][1]/255.0f, terrain[i][j][1]/255.0f);
-      glColor3f(terrain[i][j][1]/10.0f, terrain[i][j][1]/10.0f, terrain[i][j][1]/10.0f);
+      //tri 1
+      //calcNormals
+      u = vec3(verts[i+1][j].v[0] - verts[i][j].v[0],
+        verts[i+1][j].v[1] - verts[i][j].v[1],
+        verts[i+1][j].v[2] - verts[i][j].v[2]);
+      v = vec3(verts[i][j+1].v[0] - verts[i][j].v[0],
+        verts[i][j+1].v[1] - verts[i][j].v[1],
+        verts[i][j+1].v[2] - verts[i][j].v[2]);
+
+      normal = vec3((u.y * v.z) - (u.z * v.y),
+        (u.z * v.x) - (u.x * v.z),
+        (u.x * v.y) - (u.y - v.x)
+      );
+
+      glNormal3f(normal.x, normal.y, normal.z);
+
       glTexCoord2f(0.0f, 0.0f);
-      glVertex3f(terrain[i][j][0], terrain[i][j][1], terrain[i][j][2]);
+      glVertex3f(verts[i][j].v[0], verts[i][j].v[1], verts[i][j].v[2]);
 
-      //glColor3f(terrain[i+1][j][1]/255.0f, terrain[i+1][j][1]/255.0f, terrain[i+1][j][1]/255.0f);
-      glColor3f(terrain[i+1][j][1]/10.0f, terrain[i+1][j][1]/10.0f, terrain[i+1][j][1]/10.0f);
       glTexCoord2f(1.0f, 0.0f);
-      glVertex3f(terrain[i+1][j][0], terrain[i+1][j][1], terrain[i+1][j][2]);
+      glVertex3f(verts[i+1][j].v[0], verts[i+1][j].v[1], verts[i+1][j].v[2]);
 
-      //glColor3f(terrain[i][j+1][1]/255.0f, terrain[i][j+1][1]/255.0f, terrain[i][j+1][1]/255.0f);
-      glColor3f(terrain[i][j+1][1]/10.0f, terrain[i][j+1][1]/10.0f, terrain[i][j+1][1]/10.0f);
       glTexCoord2f(0.0f, 1.0f);
-      glVertex3f(terrain[i][j+1][0], terrain[i][j+1][1], terrain[i][j+1][2]);
+      glVertex3f(verts[i][j+1].v[0], verts[i][j+1].v[1], verts[i][j+1].v[2]);
 
-      //glColor3f(terrain[i+1][j+1][1]/255.0f, terrain[i+1][j+1][1]/255.0f, terrain[i+1][j+1][1]/255.0f);
-      glColor3f(terrain[i+1][j+1][1]/10.0f, terrain[i+1][j+1][1]/10.0f, terrain[i+1][j+1][1]/10.0f);
+      //tri 2
+      //calcNormals
+      u = vec3(verts[i][j+1].v[0] - verts[i+1][j].v[0],
+        verts[i][j+1].v[1] - verts[i+1][j].v[1],
+        verts[i][j+1].v[2] - verts[i+1][j].v[2]);
+      v = vec3(verts[i+1][j+1].v[0] - verts[i+1][j].v[0],
+        verts[i+1][j+1].v[1] - verts[i+1][j].v[1],
+        verts[i+1][j+1].v[2] - verts[i+1][j].v[2]);
+
+      normal = vec3((u.y * v.z) - (u.z * v.y),
+        (u.z * v.x) - (u.x * v.z),
+        (u.x * v.y) - (u.y - v.x)
+      );
+
+      glNormal3f(normal.x, normal.y, normal.z);
+
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex3f(verts[i+1][j].v[0], verts[i+1][j].v[1], verts[i+1][j].v[2]);
+
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3f(verts[i][j+1].v[0], verts[i][j+1].v[1], verts[i][j+1].v[2]);
+
       glTexCoord2f(1.0f, 1.0f);
-      glVertex3f(terrain[i+1][j+1][0], terrain[i+1][j+1][1], terrain[i+1][j+1][2]);
+      glVertex3f(verts[i+1][j+1].v[0], verts[i+1][j+1].v[1], verts[i+1][j+1].v[2]);
     }
-    glEnd();
   }
+  glEnd();
   glEndList();
 
   float a = 0;
