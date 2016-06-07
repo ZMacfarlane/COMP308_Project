@@ -14,6 +14,23 @@
 using namespace std;
 using namespace cgra;
 
+// Noise Variales
+// #define B 256;
+const int B = 256;
+
+static int p[B + B + 2];
+static float g[B + B + 2][3];
+static int start = 1;
+// endNoise
+
+#define noiseSetup(i, b0, b1, r0, r1) \
+  t = i + 10000.; \
+  b0 = ((int)t) & (B-1); \
+  b1 = (b0+1) & (B-1); \
+  r0 = t - (int)t; \
+  r1 = r0 -1.;
+
+
 Terrain::Terrain(vec2 tile){
   createDisplayListTile();
 }
@@ -21,7 +38,7 @@ Terrain::Terrain(vec2 tile){
 Terrain::~Terrain() {}
 
 void Terrain::createDisplayListTile() {
-
+glShadeModel(GL_SMOOTH);
 	// Delete old list if there is one
 	if (m_displayListPoly) glDeleteLists(m_displayListPoly, 1);
 
@@ -30,8 +47,8 @@ void Terrain::createDisplayListTile() {
 	m_displayListPoly = glGenLists(1);
 	glNewList(m_displayListPoly, GL_COMPILE);
 
-  int x = tileSize;
-  int y = tileSize;
+  const int x = tileSize;
+  const int y = tileSize;
   float height;
 
   triangle verts[x][y];
@@ -62,14 +79,17 @@ void Terrain::createDisplayListTile() {
 
       else
       */
-      height = ((float)rand()/(float)(RAND_MAX)) * 1;
+      // height = ((float)rand()/(float)(RAND_MAX)) * 255;
+      height = 0;
+      height = ridgedMultifractal(vec3(float(i), height, float(j)), 2, 2.5, 8, 1.0, 2.0);
+      height = ridgedMultifractal(vec3(float(i), height, float(j)), 2, 2.5, 8, 1.0, 2.0);
 
 
       triangle tri;
       tri.v[0] = float(i);
       tri.v[1] = height;
       tri.v[2] = float(j);
-      // height = ridgedMultifractal(tri, 2, 2.5, 8, 1.0, 2.0);
+
       verts[i][j] = tri;
 
     }
@@ -134,11 +154,6 @@ glBegin(GL_TRIANGLES);
   glEnd();
   glEndList();
 
-  float a = 0;
-  float b = 0;
-  float c = 0;
-  float d = 0;
-
 	cout << "Finished Creating Terrain Tile" << endl;
 }
 
@@ -153,7 +168,56 @@ void Terrain::renderTerrain(){
 }
 
 float Terrain::noise3(vec3 point){
-  return 0;
+  int bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
+  float rx0, rx1, ry0, ry1, rz0, rz1, *q, sx, sy, sz, a, b, c, d, t, u, v;
+  register int i, j;
+
+  if(start) {
+    start = 0;
+    noiseInit();
+  }
+
+  noiseSetup(point.x, bx0, bx1, rx0, rx1);
+  noiseSetup(point.y, by0, by1, ry0, ry1);
+  noiseSetup(point.z, bz0, bz1, rz0, rz1);
+
+  i = p[bx0];
+  j = p[bx1];
+
+  b00 = p[i + by0];
+  b10 = p[j + by0];
+  b01 = p[i + by1];
+  b11 = p[j + by1];
+
+#define at(rx, ry, rz) (rx * q[0] + ry * q[1] + rz * q[2])
+#define s_curve(t) (t * t * (3. -2. * t))
+#define lerp(t, a, b) (a + t * (b - a))
+
+  sx = s_curve(rx0);
+  sy = s_curve(ry0);
+  sz = s_curve(rz0);
+
+  q = g[b00 + bz0]; u = at(rx0, ry0, rz0);
+  q = g[b10 + bz0]; v = at(rx1, ry1, rz1);
+  a = lerp(sx, u, v);
+
+  q = g[b01 + bz0]; u = at(rx0, ry0, rz0);
+  q = g[b11 + bz0]; v = at(rx1, ry1, rz1);
+  b = lerp(sx, u, v);
+
+  c = lerp(sy, a, b); /*interpolate in y at low x*/
+
+  q = g[b00 + bz1]; u = at(rx0, ry0, rz0);
+  q = g[b10 + bz1]; v = at(rx1, ry1, rz1);
+  a = lerp(sx, u, v);
+
+  q = g[b01 + bz1]; u = at(rx0, ry0, rz0);
+  q = g[b11 + bz1]; v = at(rx1, ry1, rz1);
+  b = lerp(sx, u, v);
+
+  d = lerp(sy, a, b); /*interpolate in y at high x*/
+
+  return 1.5 * lerp(sz, d, c); /*interpolate in z*/
 }
 
 /* Ridged multifractal terrain model.
@@ -226,3 +290,53 @@ float Terrain::noise3(vec3 point){
    }
    return result;
  } /* RidgedMultifractal() */
+
+ void Terrain::noiseInit(){
+  long random();
+  int i, j, k;
+  float /*v[3],*/ s;
+  vec3 v;
+
+  /*Create an array of random gradient vectors uniformly on the unit sphere*/
+
+  srandom(1);
+  for(i = 0; i < B ; i++){
+    do{
+      /*choose uniformly in a cube*/
+      /*
+      for(j = 0; j < 3; j++){
+        v[j] = (float)((random() % (B + B)) - B) / B;
+      }
+      */
+      float v0 = (float)((random() % (B + B)) - B) / B;
+      float v1 = (float)((random() % (B + B)) - B) / B;
+      float v2 = (float)((random() % (B + B)) - B) / B;
+
+      v = vec3(v0, v1, v2);
+
+      s = dot(v,v);
+    } while(s > 1.0);  /*if not in sphere try again*/
+    s = sqrt(s);
+    for(j = 0; j < 3; j++){ /*else normalize*/
+      g[i][j] = v[j] / s;
+    }
+  }
+
+  /*Create a psudorandom permutation of [1..B]*/
+  for(i = 0; i < B; i++){
+    p[i] = i;
+  }
+  for(i = B; i > 0; i -= 2){
+    k = p[i];
+    p[i] = p[j = random() % B];
+    p[k] = k;
+  }
+
+  /*extend g and p arrays to allow for faster indexing*/
+  for(i = 0; i < B + 2; i++){
+    p[B + i] = p[i];
+    for(j = 0; j < 3; j++){
+      g[B + i][j] = g[i][j];
+    }
+  }
+}
