@@ -30,21 +30,46 @@ void Terrain::createDisplayListTile() {
 	m_displayListPoly = glGenLists(1);
 	glNewList(m_displayListPoly, GL_COMPILE);
 
-  float x = tileSize;
-  float y = tileSize;
+  int x = tileSize;
+  int y = tileSize;
   float height;
 
-  // float terrain[64][64][3];
-  triangle verts[64][64];
+  triangle verts[x][y];
 
   for(int i = 0; i < x; i++){
     for(int j = 0; j < y; j++){
-      height = ((float)rand()/(float)(RAND_MAX)) * 5;
+      /*
+      if(j <= 10)
+        height = 0;
+      else if(j <= 20)
+        height = 0.5;
+      else if(j <= 30)
+        height = 0.8;
+      else if(j <= 40)
+        height = 1;
+      else if(j <= 50)
+        height = 2;
+      else if(j <= 60)
+        height = 1.6;
+      else if(j <= 70)
+        height = 2.3;
+        if(j <= 80)
+          height = 2.4;
+        else if(j <= 90)
+          height = 2.8;
+        else if(j <= 100)
+          height = 3;
+
+      else
+      */
+      height = ((float)rand()/(float)(RAND_MAX)) * 1;
+
 
       triangle tri;
       tri.v[0] = float(i);
       tri.v[1] = height;
       tri.v[2] = float(j);
+      // height = ridgedMultifractal(tri, 2, 2.5, 8, 1.0, 2.0);
       verts[i][j] = tri;
 
     }
@@ -69,7 +94,7 @@ glBegin(GL_TRIANGLES);
         (u.x * v.y) - (u.y - v.x)
       );
 
-      glNormal3f(normal.x, normal.y, normal.z);
+      glNormal3f(-normal.x, -normal.y, -normal.z);
 
       glTexCoord2f(0.0f, 0.0f);
       glVertex3f(verts[i][j].v[0], verts[i][j].v[1], verts[i][j].v[2]);
@@ -114,63 +139,6 @@ glBegin(GL_TRIANGLES);
   float c = 0;
   float d = 0;
 
-/*
-  //glBegin(GL_TRIANGLES);
-  glBegin(GL_QUAD_STRIP);
-  for(float i = 0.0f; i < x; i++){
-    for(float j = 0.0f; j < y; j++){
-      glNormal3f(0.0, 0.0, 1.0);
-
-      glTexCoord2f((1.0 / (x-1)) * i, (1.0 / (y-1)) * j);
-      glVertex3f(i, 0.0, j);
-      //glVertex3f(i, a, j);
-      //glVertex3f(i, rand() % 10, j);
-      //a += rand() % 3;
-
-      glTexCoord2f((1.0 / (x-1)) * i, (1.0 / (y-1)) * j+1);
-      glVertex3f(i, 0.0, j+1);
-      //glVertex3f(i, b, j+1);
-      //glVertex3f(i, rand() % 10, j+1);
-      //b += rand() % 3;
-
-
-
-      glTexCoord2f((1.0 / (x-1)) * i+1, (1.0 / (y-1)) * j+1);
-      glVertex3f(i+1, 0.0, j+1);
-      //glVertex3f(i+1, c, j+1);
-      //glVertex3f(i+1, rand() % 10, j+1);
-      //c += rand() % 3;
-
-
-
-      glTexCoord2f((1.0 / (x-1)) * i+1, (1.0 / (y-1)) * j);
-      glVertex3f(i+1, 0.0, j);
-      //glVertex3f(i+1, d, j);
-      //glVertex3f(i+1, rand() % 10, j);
-      //d += rand() % 3;
-
-
-    }
-  }
-  glEnd();
-  glEndList();
-  */
-
-/*
-	// TODO
-	glBegin(GL_QUADS);
-  glNormal3f(0.0, 0.0, 1.0);
-  glTexCoord2f(0.0, 0.0);
-  glVertex3f(-5.0, -0.0, -5.0);
-  glTexCoord2f(0.0, 1.0);
-  glVertex3f(-5.0, 0.0, 5.0);
-  glTexCoord2f(1.0, 1.0);
-  glVertex3f(5.0, 0.0, 5.0);
-  glTexCoord2f(1.0, 0.0);
-  glVertex3f(5.0, 0.0, -5.0);
-	glEnd();
-	glEndList();
-*/
 	cout << "Finished Creating Terrain Tile" << endl;
 }
 
@@ -178,6 +146,7 @@ void Terrain::renderTerrain(){
  //glDisable(GL_COLOR_MATERIAL);
  glEnable(GL_TEXTURE_2D);
  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+ glShadeModel(GL_SMOOTH);
  glCallList(m_displayListPoly);
  glDisable(GL_TEXTURE_2D);
  glEnable(GL_COLOR_MATERIAL);
@@ -194,6 +163,11 @@ float Terrain::noise3(vec3 point){
  *  H:      1.0
  *  offset: 1.0
  *  gain:   2.0
+ *
+ *  H: the fractal dimension of the roughest areas
+ *  Lacuarity: the gap between successive frequencies
+ * octaves: number of frequencies in the fBm
+ *  offset: raises the terrain from sea level
  *
  * Taken from the book "Texturing and modeling: aprocedural approach"
  * by D.S.Ebert, F K. Musgrave, D. Peachey, K. Perlin, S. Worley

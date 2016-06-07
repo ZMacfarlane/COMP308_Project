@@ -214,18 +214,18 @@ void render(int width, int height) {
 	//Render Terrain
 	g_terrain->renderTerrain();
 
-	glTranslatef(-63, 0, 0);
+	glTranslatef(-126, 0, 0);
 	g_terrain->renderTerrain();
-	glTranslatef(63, 0, 0);
+	glTranslatef(126, 0, 0);
 
-	glTranslatef(-63, 0, -63);
+	glTranslatef(-126, 0, -126);
 	g_terrain->renderTerrain();
-	glTranslatef(63, 0, 63);
+	glTranslatef(126, 0, 126);
 
-	glTranslatef(0, 0, -63);
+	glTranslatef(0, 0, -126);
 	g_terrain->renderTerrain();
-	glTranslatef(0, 0, 63);
-	
+	glTranslatef(0, 0, 126);
+
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
