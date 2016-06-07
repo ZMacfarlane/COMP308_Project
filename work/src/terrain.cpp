@@ -1,4 +1,5 @@
 #include <cmath>
+#include <ctime>
 #include <iostream> // input/output streams
 #include <fstream>  // file streams
 #include <sstream>  // string streams
@@ -55,39 +56,13 @@ glShadeModel(GL_SMOOTH);
 
   for(int i = 0; i < x; i++){
     for(int j = 0; j < y; j++){
-      /*
-      if(j <= 10)
-        height = 0;
-      else if(j <= 20)
-        height = 0.5;
-      else if(j <= 30)
-        height = 0.8;
-      else if(j <= 40)
-        height = 1;
-      else if(j <= 50)
-        height = 2;
-      else if(j <= 60)
-        height = 1.6;
-      else if(j <= 70)
-        height = 2.3;
-        if(j <= 80)
-          height = 2.4;
-        else if(j <= 90)
-          height = 2.8;
-        else if(j <= 100)
-          height = 3;
 
-      else
-      */
-      // height = ((float)rand()/(float)(RAND_MAX)) * 255;
-      height = 0;
-      height = ridgedMultifractal(vec3(float(i), height, float(j)), 2, 2.5, 8, 1.0, 2.0);
-      height = ridgedMultifractal(vec3(float(i), height, float(j)), 2, 2.5, 8, 1.0, 2.0);
-
+      height = 1;
+      height = ridgedMultifractal(vec3(float(i)/256, height, float(j)/256), 2, 2.5, 8, 1.0, 2.0);
 
       triangle tri;
       tri.v[0] = float(i);
-      tri.v[1] = height;
+      tri.v[1] = height*40;
       tri.v[2] = float(j);
 
       verts[i][j] = tri;
@@ -299,7 +274,7 @@ float Terrain::noise3(vec3 point){
 
   /*Create an array of random gradient vectors uniformly on the unit sphere*/
 
-  srandom(1);
+  srandom(time(NULL));
   for(i = 0; i < B ; i++){
     do{
       /*choose uniformly in a cube*/

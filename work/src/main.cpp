@@ -32,6 +32,7 @@ using namespace cgra;
 GLFWwindow* g_window;
 
 Terrain *g_terrain= nullptr;
+Terrain *g_terrain2= nullptr;
 
 // Projection values
 //
@@ -121,6 +122,7 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 
 void initTerrain() {
 	g_terrain = new Terrain(vec2(0, 0));
+	g_terrain2 = new Terrain(vec2(0, 0));
 }
 
 // Sets up where and what the light is
@@ -219,11 +221,11 @@ void render(int width, int height) {
 	glTranslatef(126, 0, 0);
 
 	glTranslatef(-126, 0, -126);
-	g_terrain->renderTerrain();
+	g_terrain2->renderTerrain();
 	glTranslatef(126, 0, 126);
 
 	glTranslatef(0, 0, -126);
-	g_terrain->renderTerrain();
+	g_terrain2->renderTerrain();
 	glTranslatef(0, 0, 126);
 
 	glDisable(GL_TEXTURE_2D);

@@ -31,7 +31,7 @@ struct triangle {
 class Terrain {
 private:
   GLuint m_displayListPoly; // DisplayList for Polygon
-  int tileSize = 128;
+  int tileSize = 256;
 
   float ridgedMultifractal(cgra::vec3, float, float, float, float, float);
   float noise3(cgra::vec3);
