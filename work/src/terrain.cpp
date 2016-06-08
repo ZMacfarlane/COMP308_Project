@@ -19,6 +19,7 @@ using namespace cgra;
 // #define B 256;
 const int B = 256;
 
+
 static int p[B + B + 2];
 static float g[B + B + 2][3];
 static int start = 1;
@@ -39,7 +40,7 @@ Terrain::Terrain(vec2 tile){
 Terrain::~Terrain() {}
 
 void Terrain::createDisplayListTile() {
-glShadeModel(GL_SMOOTH);
+// glShadeModel(GL_SMOOTH);
 	// Delete old list if there is one
 	if (m_displayListPoly) glDeleteLists(m_displayListPoly, 1);
 
@@ -61,69 +62,166 @@ glShadeModel(GL_SMOOTH);
       height = ridgedMultifractal(vec3(float(i)/256, height, float(j)/256), 2, 2.5, 8, 1.0, 2.0);
 
       triangle tri;
-      tri.v[0] = float(i);
-      tri.v[1] = height*40;
-      tri.v[2] = float(j);
+      tri.v[0].p = float(i);
+      tri.v[1].p = height*heightMultiplier;
+      tri.v[2].p = float(j);
+
+      tri.v[0].n = 0;
+      tri.v[1].n = 0;
+      tri.v[2].n = 0;
 
       verts[i][j] = tri;
 
     }
   }
-vec3 u;
-vec3 v;
-vec3 normal;
+  vec3 u;
+  vec3 v;
+  vec3 normal;
+
+  for(int i = 0; i < x-1; i++){
+    for(int j = 0; j < y-1; j++){
+      //tri 1
+      u = vec3(verts[i+1][j].v[0].p - verts[i][j].v[0].p,
+        verts[i+1][j].v[1].p/heightMultiplier - verts[i][j].v[1].p/heightMultiplier,
+        verts[i+1][j].v[2].p - verts[i][j].v[2].p);
+
+      v = vec3(verts[i][j+1].v[0].p - verts[i][j].v[0].p,
+        verts[i][j+1].v[1].p/heightMultiplier - verts[i][j].v[1].p/heightMultiplier,
+        verts[i][j+1].v[2].p - verts[i][j].v[2].p);
+        // cout << "u x: " << u.x << " Y: " << u.y << " z: " << u.z <<endl;
+        // cout << "v x: " << v.x << " Y: " << v.y << " z: " << v.z <<endl;
+
+      normal = cross(u,v);
+
+      verts[i][j].v[0].n = verts[i][j].v[0].n + normal.x;
+      verts[i][j].v[1].n = verts[i][j].v[1].n + normal.y;
+      verts[i][j].v[2].n = verts[i][j].v[2].n + normal.z;
+
+      verts[i+1][j].v[0].n = verts[i+1][j].v[0].n + normal.x;
+      verts[i+1][j].v[1].n = verts[i+1][j].v[1].n + normal.y;
+      verts[i+1][j].v[2].n = verts[i+1][j].v[2].n + normal.z;
+
+      verts[i][j+1].v[0].n = verts[i][j+1].v[0].n + normal.x;
+      verts[i][j+1].v[1].n = verts[i][j+1].v[1].n + normal.y;
+      verts[i][j+1].v[2].n = verts[i][j+1].v[2].n + normal.z;
+      //  cout << "i: " << i << " j: " << j << " height: " << << "n x: " << normal.x << " Y: " << normal.y << " z: " << normal.z <<endl;
+      //tri 2
+
+      u = vec3(verts[i][j+1].v[0].p - verts[i+1][j].v[0].p,
+        verts[i][j+1].v[1].p - verts[i+1][j].v[1].p,
+        verts[i][j+1].v[2].p - verts[i+1][j].v[2].p);
+      v = vec3(verts[i+1][j+1].v[0].p - verts[i+1][j].v[0].p,
+        verts[i+1][j+1].v[1].p - verts[i+1][j].v[1].p,
+        verts[i+1][j+1].v[2].p - verts[i+1][j].v[2].p);
+
+      normal = cross(u,v);
+
+      verts[i+1][j].v[0].n = verts[i+1][j].v[0].n + normal.x;
+      verts[i+1][j].v[1].n = verts[i+1][j].v[1].n + normal.y;
+      verts[i+1][j].v[2].n = verts[i+1][j].v[2].n + normal.z;
+
+      verts[i][j+1].v[0].n = verts[i][j+1].v[0].n + normal.x;
+      verts[i][j+1].v[1].n = verts[i][j+1].v[1].n + normal.y;
+      verts[i][j+1].v[2].n = verts[i][j+1].v[2].n + normal.z;
+
+      verts[i+1][j+1].v[0].n = verts[i+1][j+1].v[0].n + normal.x;
+      verts[i+1][j+1].v[1].n = verts[i+1][j+1].v[1].n + normal.y;
+      verts[i+1][j+1].v[2].n = verts[i+1][j+1].v[2].n + normal.z;
+    }
+  }
+
+
+  for(int i = 0; i < x; i++){
+    for(int j = 0; j < y; j++){
+      vec3 temp;
+
+      temp = vec3(verts[i][j].v[0].n, verts[i][j].v[1].n, verts[i][j].v[2].n);
+      // cout << "orrig: x: " << temp.x << " y " << temp.y << " z " << temp.z << endl;
+      temp = normalize(temp);
+      verts[i][j].v[0].n = temp.x;
+      verts[i][j].v[1].n = temp.y;
+      verts[i][j].v[2].n = temp.z;
+      // cout << "norm: x: " << temp.x << " y " << temp.y << " z " << temp.z << endl;
+      // cout << "x: " << temp.x << " Y: " << temp.y << " z: " << temp.z <<endl;
+/*
+      temp = vec3(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
+      temp = normalize(temp);
+      verts[i+1][j].v[0].n = temp.x;
+      verts[i+1][j].v[1].n = temp.x;
+      verts[i+1][j].v[2].n = temp.x;
+
+      temp = vec3(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
+      temp = normalize(temp);
+      verts[i][j+1].v[0].n = temp.x;
+      verts[i][j+1].v[1].n = temp.x;
+      verts[i][j+1].v[2].n = temp.x;
+
+      //
+
+      temp = vec3(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
+      temp = normalize(temp);
+      verts[i+1][j].v[0].n = temp.x;
+      verts[i+1][j].v[1].n = temp.x;
+      verts[i+1][j].v[2].n = temp.x;
+
+      temp = vec3(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
+      temp = normalize(temp);
+      verts[i][j+1].v[0].n = temp.x;
+      verts[i][j+1].v[1].n = temp.x;
+      verts[i][j+1].v[2].n = temp.x;
+
+      temp = vec3(verts[i+1][j+1].v[0].n, verts[i+1][j+1].v[1].n, verts[i+1][j+1].v[2].n);
+      temp = normalize(temp);
+      verts[i+1][j+1].v[0].n = temp.x;
+      verts[i+1][j+1].v[1].n = temp.x;
+      verts[i+1][j+1].v[2].n = temp.x;
+      */
+
+    }
+  }
+
+// vec3 u;
+// vec3 v;
+// vec3 normal;
 glBegin(GL_TRIANGLES);
   for(int j = 0; j < x-1; j++){
     for(int i = 0; i < y-1; i++){
+
       //tri 1
-      //calcNormals
-      u = vec3(verts[i+1][j].v[0] - verts[i][j].v[0],
-        verts[i+1][j].v[1] - verts[i][j].v[1],
-        verts[i+1][j].v[2] - verts[i][j].v[2]);
-      v = vec3(verts[i][j+1].v[0] - verts[i][j].v[0],
-        verts[i][j+1].v[1] - verts[i][j].v[1],
-        verts[i][j+1].v[2] - verts[i][j].v[2]);
 
-      normal = vec3((u.y * v.z) - (u.z * v.y),
-        (u.z * v.x) - (u.x * v.z),
-        (u.x * v.y) - (u.y - v.x)
-      );
+      // glNormal3f(-normal.x, -normal.y, -normal.z);
+      glNormal3f(verts[i][j].v[0].n, verts[i][j].v[1].n, verts[i][j].v[2].n);
+      // glTexCoord2f(0.0f, 0.0f);
+      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glVertex3f(verts[i][j].v[0].p, verts[i][j].v[1].p, verts[i][j].v[2].p);
 
-      glNormal3f(-normal.x, -normal.y, -normal.z);
+      glNormal3f(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
+      // glTexCoord2f(1.0f, 0.0f);
+      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glVertex3f(verts[i+1][j].v[0].p, verts[i+1][j].v[1].p, verts[i+1][j].v[2].p);
 
-      glTexCoord2f(0.0f, 0.0f);
-      glVertex3f(verts[i][j].v[0], verts[i][j].v[1], verts[i][j].v[2]);
+      glNormal3f(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
+      // glTexCoord2f(0.0f, 1.0f);
+      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glVertex3f(verts[i][j+1].v[0].p, verts[i][j+1].v[1].p, verts[i][j+1].v[2].p);
 
-      glTexCoord2f(1.0f, 0.0f);
-      glVertex3f(verts[i+1][j].v[0], verts[i+1][j].v[1], verts[i+1][j].v[2]);
-
-      glTexCoord2f(0.0f, 1.0f);
-      glVertex3f(verts[i][j+1].v[0], verts[i][j+1].v[1], verts[i][j+1].v[2]);
 
       //tri 2
-      //calcNormals
-      u = vec3(verts[i][j+1].v[0] - verts[i+1][j].v[0],
-        verts[i][j+1].v[1] - verts[i+1][j].v[1],
-        verts[i][j+1].v[2] - verts[i+1][j].v[2]);
-      v = vec3(verts[i+1][j+1].v[0] - verts[i+1][j].v[0],
-        verts[i+1][j+1].v[1] - verts[i+1][j].v[1],
-        verts[i+1][j+1].v[2] - verts[i+1][j].v[2]);
 
-      normal = vec3((u.y * v.z) - (u.z * v.y),
-        (u.z * v.x) - (u.x * v.z),
-        (u.x * v.y) - (u.y - v.x)
-      );
+      glNormal3f(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
+      // glTexCoord2f(1.0f, 0.0f);
+      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glVertex3f(verts[i+1][j].v[0].p, verts[i+1][j].v[1].p, verts[i+1][j].v[2].p);
 
-      glNormal3f(normal.x, normal.y, normal.z);
+      glNormal3f(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
+      // glTexCoord2f(0.0f, 1.0f);
+      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glVertex3f(verts[i][j+1].v[0].p, verts[i][j+1].v[1].p, verts[i][j+1].v[2].p);
 
-      glTexCoord2f(1.0f, 0.0f);
-      glVertex3f(verts[i+1][j].v[0], verts[i+1][j].v[1], verts[i+1][j].v[2]);
-
-      glTexCoord2f(0.0f, 1.0f);
-      glVertex3f(verts[i][j+1].v[0], verts[i][j+1].v[1], verts[i][j+1].v[2]);
-
-      glTexCoord2f(1.0f, 1.0f);
-      glVertex3f(verts[i+1][j+1].v[0], verts[i+1][j+1].v[1], verts[i+1][j+1].v[2]);
+      glNormal3f(verts[i+1][j+1].v[0].n, verts[i+1][j+1].v[1].n, verts[i+1][j+1].v[2].n);
+      // glTexCoord2f(1.0f, 1.0f);
+      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glVertex3f(verts[i+1][j+1].v[0].p, verts[i+1][j+1].v[1].p, verts[i+1][j+1].v[2].p);
     }
   }
   glEnd();
@@ -137,6 +235,7 @@ void Terrain::renderTerrain(){
  glEnable(GL_TEXTURE_2D);
  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
  glShadeModel(GL_SMOOTH);
+ // glShadeModel(GL_FLAT);
  glCallList(m_displayListPoly);
  glDisable(GL_TEXTURE_2D);
  glEnable(GL_COLOR_MATERIAL);

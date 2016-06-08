@@ -38,7 +38,7 @@ Terrain *g_terrain2= nullptr;
 //
 float g_fovy = 20.0;
 float g_znear = 0.1;
-float g_zfar = 1000.0;
+float g_zfar = 10000.0;
 
 
 // Mouse controlled Camera values
@@ -215,7 +215,7 @@ void render(int width, int height) {
 
 	//Render Terrain
 	g_terrain->renderTerrain();
-
+/*
 	glTranslatef(-126, 0, 0);
 	g_terrain->renderTerrain();
 	glTranslatef(126, 0, 0);
@@ -227,7 +227,7 @@ void render(int width, int height) {
 	glTranslatef(0, 0, -126);
 	g_terrain2->renderTerrain();
 	glTranslatef(0, 0, 126);
-
+*/
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);

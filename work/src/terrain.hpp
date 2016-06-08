@@ -15,23 +15,24 @@ struct tile{
   int y = 0; //positiion of tile along y-axis
 };
 
-/*
+
 struct vertex {
-	int p = 0; // index for point in m_points
-	int t = 0; // index for uv in m_uvs
-	int n = 0; // index for normal in m_normals
+	float p = 0; // point
+	float t = 0; // texture
+	float n = 0; // normal
 };
-*/
+
 
 struct triangle {
-	// vertex v[3]; //requires 3 verticies
-  float v[3];
+	vertex v[3]; //requires 3 verticies
+  // float v[3];
 };
 
 class Terrain {
 private:
   GLuint m_displayListPoly; // DisplayList for Polygon
   int tileSize = 256;
+  int heightMultiplier = 50;
 
   float ridgedMultifractal(cgra::vec3, float, float, float, float, float);
   float noise3(cgra::vec3);
