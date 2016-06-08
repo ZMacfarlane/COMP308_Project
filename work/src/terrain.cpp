@@ -16,7 +16,6 @@ using namespace std;
 using namespace cgra;
 
 // Noise Variales
-// #define B 256;
 const int B = 256;
 
 
@@ -88,8 +87,6 @@ void Terrain::createDisplayListTile() {
       v = vec3(verts[i][j+1].v[0].p - verts[i][j].v[0].p,
         verts[i][j+1].v[1].p/heightMultiplier - verts[i][j].v[1].p/heightMultiplier,
         verts[i][j+1].v[2].p - verts[i][j].v[2].p);
-        // cout << "u x: " << u.x << " Y: " << u.y << " z: " << u.z <<endl;
-        // cout << "v x: " << v.x << " Y: " << v.y << " z: " << v.z <<endl;
 
       normal = cross(u,v);
 
@@ -104,7 +101,7 @@ void Terrain::createDisplayListTile() {
       verts[i][j+1].v[0].n = verts[i][j+1].v[0].n + normal.x;
       verts[i][j+1].v[1].n = verts[i][j+1].v[1].n + normal.y;
       verts[i][j+1].v[2].n = verts[i][j+1].v[2].n + normal.z;
-      //  cout << "i: " << i << " j: " << j << " height: " << << "n x: " << normal.x << " Y: " << normal.y << " z: " << normal.z <<endl;
+
       //tri 2
 
       u = vec3(verts[i][j+1].v[0].p - verts[i+1][j].v[0].p,
@@ -136,92 +133,52 @@ void Terrain::createDisplayListTile() {
       vec3 temp;
 
       temp = vec3(verts[i][j].v[0].n, verts[i][j].v[1].n, verts[i][j].v[2].n);
-      // cout << "orrig: x: " << temp.x << " y " << temp.y << " z " << temp.z << endl;
       temp = normalize(temp);
       verts[i][j].v[0].n = temp.x;
       verts[i][j].v[1].n = temp.y;
       verts[i][j].v[2].n = temp.z;
-      // cout << "norm: x: " << temp.x << " y " << temp.y << " z " << temp.z << endl;
-      // cout << "x: " << temp.x << " Y: " << temp.y << " z: " << temp.z <<endl;
-/*
-      temp = vec3(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
-      temp = normalize(temp);
-      verts[i+1][j].v[0].n = temp.x;
-      verts[i+1][j].v[1].n = temp.x;
-      verts[i+1][j].v[2].n = temp.x;
-
-      temp = vec3(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
-      temp = normalize(temp);
-      verts[i][j+1].v[0].n = temp.x;
-      verts[i][j+1].v[1].n = temp.x;
-      verts[i][j+1].v[2].n = temp.x;
-
-      //
-
-      temp = vec3(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
-      temp = normalize(temp);
-      verts[i+1][j].v[0].n = temp.x;
-      verts[i+1][j].v[1].n = temp.x;
-      verts[i+1][j].v[2].n = temp.x;
-
-      temp = vec3(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
-      temp = normalize(temp);
-      verts[i][j+1].v[0].n = temp.x;
-      verts[i][j+1].v[1].n = temp.x;
-      verts[i][j+1].v[2].n = temp.x;
-
-      temp = vec3(verts[i+1][j+1].v[0].n, verts[i+1][j+1].v[1].n, verts[i+1][j+1].v[2].n);
-      temp = normalize(temp);
-      verts[i+1][j+1].v[0].n = temp.x;
-      verts[i+1][j+1].v[1].n = temp.x;
-      verts[i+1][j+1].v[2].n = temp.x;
-      */
 
     }
   }
 
-// vec3 u;
-// vec3 v;
-// vec3 normal;
+ float texScale = 0.08;
 glBegin(GL_TRIANGLES);
   for(int j = 0; j < x-1; j++){
     for(int i = 0; i < y-1; i++){
-
       //tri 1
 
-      // glNormal3f(-normal.x, -normal.y, -normal.z);
       glNormal3f(verts[i][j].v[0].n, verts[i][j].v[1].n, verts[i][j].v[2].n);
-      // glTexCoord2f(0.0f, 0.0f);
-      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glTexCoord2f(i*texScale, j*texScale);
       glVertex3f(verts[i][j].v[0].p, verts[i][j].v[1].p, verts[i][j].v[2].p);
 
       glNormal3f(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
-      // glTexCoord2f(1.0f, 0.0f);
-      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glTexCoord2f(1.0f, 0.0f);
+      glTexCoord2f((i+1)*texScale, (j)*texScale);
       glVertex3f(verts[i+1][j].v[0].p, verts[i+1][j].v[1].p, verts[i+1][j].v[2].p);
 
       glNormal3f(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
-      // glTexCoord2f(0.0f, 1.0f);
-      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glTexCoord2f(0.0f, 1.0f);
+      glTexCoord2f((i)*texScale, (j+1)*texScale);
       glVertex3f(verts[i][j+1].v[0].p, verts[i][j+1].v[1].p, verts[i][j+1].v[2].p);
 
 
       //tri 2
 
       glNormal3f(verts[i+1][j].v[0].n, verts[i+1][j].v[1].n, verts[i+1][j].v[2].n);
-      // glTexCoord2f(1.0f, 0.0f);
-      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glTexCoord2f(1.0f, 0.0f);
+      glTexCoord2f((i+1)*texScale, (j)*texScale);
       glVertex3f(verts[i+1][j].v[0].p, verts[i+1][j].v[1].p, verts[i+1][j].v[2].p);
 
       glNormal3f(verts[i][j+1].v[0].n, verts[i][j+1].v[1].n, verts[i][j+1].v[2].n);
-      // glTexCoord2f(0.0f, 1.0f);
-      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glTexCoord2f(0.0f, 1.0f);
+      glTexCoord2f((i)*texScale, (j+1)*texScale);
       glVertex3f(verts[i][j+1].v[0].p, verts[i][j+1].v[1].p, verts[i][j+1].v[2].p);
 
       glNormal3f(verts[i+1][j+1].v[0].n, verts[i+1][j+1].v[1].n, verts[i+1][j+1].v[2].n);
-      // glTexCoord2f(1.0f, 1.0f);
-      glTexCoord2f(1.0f/x*i, 1.0f/y*j);
+      glTexCoord2f(1.0f, 1.0f);
+      glTexCoord2f((i+1)*texScale, (j+1)*texScale);
       glVertex3f(verts[i+1][j+1].v[0].p, verts[i+1][j+1].v[1].p, verts[i+1][j+1].v[2].p);
+
     }
   }
   glEnd();

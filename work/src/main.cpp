@@ -49,6 +49,10 @@ float g_pitch = 30.0;
 float g_yaw = 15;
 float g_zoom = 1.0;
 
+//Key controlled camera values
+float g_forward = 0;
+float g_right = 0;
+
 // Values and fields to showcase the use of shaders
 // Remove when modifying main.cpp for Assignment 3
 //
@@ -106,8 +110,32 @@ void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// cout << "Key Callback :: key=" << key << "scancode=" << scancode
 	// 	<< "action=" << action << "mods=" << mods << endl;
-	// YOUR CODE GOES HERE
-	// ...
+	// g_right += g_right;
+	// g_forward += g_forward;
+	if(key == GLFW_KEY_W && action == GLFW_PRESS){
+		g_forward += 0.1f;
+	}
+	if(key == GLFW_KEY_W && action == GLFW_RELEASE){
+		// g_forward = 0.0f;
+	}
+	if(key == GLFW_KEY_D && action == GLFW_PRESS){
+		g_right += 0.1f;
+	}
+	if(key == GLFW_KEY_D && action == GLFW_RELEASE){
+		// g_right = 0.0f;
+	}
+	if(key == GLFW_KEY_S && action == GLFW_PRESS){
+		g_forward += -0.1f;
+	}
+	if(key == GLFW_KEY_S && action == GLFW_RELEASE){
+		// g_forward = 0.0f;
+	}
+	if(key == GLFW_KEY_A && action == GLFW_PRESS){
+		g_right += -0.1f;
+	}
+	if(key == GLFW_KEY_A && action == GLFW_RELEASE){
+		// g_right = 0.0f;
+	}
 }
 
 
@@ -189,7 +217,8 @@ void setupCamera(int width, int height) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0, 0, -50 * g_zoom);
+	// glTranslatef(0, 0, -50 * g_zoom);
+	glTranslatef( 1*g_right, 1*g_forward, -50 * g_zoom);
 	glRotatef(g_pitch, 1, 0, 0);
 	glRotatef(g_yaw, 0, 1, 0);
 
