@@ -11,6 +11,7 @@ SET(headers
 	"simple_image.hpp"
 	"imageLoader.hpp"
 	"terrain.hpp"
+	"ocean.hpp"
 )
 
 
@@ -18,6 +19,7 @@ SET(headers
 SET(sources
 	"main.cpp"
 	"terrain.cpp"
+	"ocean.cpp"
 )
 
 # Add executable target and link libraries

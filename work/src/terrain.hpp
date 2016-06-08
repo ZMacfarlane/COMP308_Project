@@ -40,7 +40,7 @@ private:
   static void noiseInit();
 
 public:
-  Terrain(cgra::vec2);
+  Terrain(float, float);
   ~Terrain();
 
   void renderTerrain();

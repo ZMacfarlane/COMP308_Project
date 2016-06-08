@@ -1,5 +1,6 @@
 #include <cmath>
 #include <ctime>
+#include <cstring>
 #include <iostream> // input/output streams
 #include <fstream>  // file streams
 #include <sstream>  // string streams
@@ -22,7 +23,11 @@ const int B = 256;
 static int p[B + B + 2];
 static float g[B + B + 2][3];
 static int start = 1;
+static int first = true;
+static float *exponent_array;
 // endNoise
+float fracDim;
+float seed;
 
 #define noiseSetup(i, b0, b1, r0, r1) \
   t = i + 10000.; \
@@ -32,13 +37,23 @@ static int start = 1;
   r1 = r0 -1.;
 
 
-Terrain::Terrain(vec2 tile){
+Terrain::Terrain(float h, float s){
+  fracDim = h;
+  seed = s;
+  start = 1;
+  int P[B + B + 2];
+  float G[B + B + 2][3];
+  memcpy (&p, &P, sizeof(P));
+  cout <<"two " << p[50] <<endl;
+  memcpy (&g, &G, sizeof(G));
+  first = true;
   createDisplayListTile();
 }
 
 Terrain::~Terrain() {}
 
 void Terrain::createDisplayListTile() {
+
 // glShadeModel(GL_SMOOTH);
 	// Delete old list if there is one
 	if (m_displayListPoly) glDeleteLists(m_displayListPoly, 1);
@@ -58,12 +73,16 @@ void Terrain::createDisplayListTile() {
     for(int j = 0; j < y; j++){
 
       height = 1;
-      height = ridgedMultifractal(vec3(float(i)/256, height, float(j)/256), 2, 2.5, 8, 1.0, 2.0);
+      height = ridgedMultifractal(vec3(float(i)/x, height, float(j)/y), fracDim, 2.5, 8, 1.0, 2.0);
+      // cout << "dim " << fracDim << endl;
 
       triangle tri;
       tri.v[0].p = float(i);
       tri.v[1].p = height*heightMultiplier;
       tri.v[2].p = float(j);
+
+      if(i == 0 || j == 0 || i == x-1 || j == y-1)
+        tri.v[1].p = 0;
 
       tri.v[0].n = 0;
       tri.v[1].n = 0;
@@ -141,8 +160,17 @@ void Terrain::createDisplayListTile() {
     }
   }
 
- float texScale = 0.08;
+ float texScale = 0.05;
 glBegin(GL_TRIANGLES);
+      float ambient[] = { 1.0, 1.0, 1.0 ,1.0 };
+			glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+			float diffuse[] = { 1.0, 1.0, 1.0 ,1.0 };
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+			float specular[] = { 1.0, 1.0, 1.0, 9800.0 };
+			glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+			float shininess[] = { 0.0078*128.0 };
+			glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+
   for(int j = 0; j < x-1; j++){
     for(int i = 0; i < y-1; i++){
       //tri 1
@@ -259,7 +287,7 @@ float Terrain::noise3(vec3 point){
  *  offset: 1.0
  *  gain:   2.0
  *
- *  H: the fractal dimension of the roughest areas
+ *  H: the fractal dimension of the roughest areas; lower = more rough
  *  Lacuarity: the gap between successive frequencies
  * octaves: number of frequencies in the fBm
  *  offset: raises the terrain from sea level
@@ -273,8 +301,8 @@ float Terrain::noise3(vec3 point){
  {
    float result, frequency, sig, weight;
     //Terrain::noise3();
-   static int first = true;
-   static float *exponent_array;
+  //  static int first = true;
+  //  static float *exponent_array;
 
    /* precompute and store spectral weights */
    if(first){
@@ -330,7 +358,7 @@ float Terrain::noise3(vec3 point){
 
   /*Create an array of random gradient vectors uniformly on the unit sphere*/
 
-  srandom(time(NULL));
+  srandom(seed/*time(NULL)*/);
   for(i = 0; i < B ; i++){
     do{
       /*choose uniformly in a cube*/

@@ -23,6 +23,7 @@
 #include "simple_shader.hpp"
 #include "opengl.hpp"
 #include "terrain.hpp"
+#include "ocean.hpp"
 
 using namespace std;
 using namespace cgra;
@@ -33,6 +34,13 @@ GLFWwindow* g_window;
 
 Terrain *g_terrain= nullptr;
 Terrain *g_terrain2= nullptr;
+Terrain *g_terrain3= nullptr;
+Terrain *g_terrain4= nullptr;
+
+Ocean *g_ocean= nullptr;
+Ocean *g_ocean2= nullptr;
+Ocean *g_ocean3= nullptr;
+Ocean *g_ocean4= nullptr;
 
 // Projection values
 //
@@ -58,6 +66,7 @@ float g_right = 0;
 //
 bool g_useShader = false;
 GLuint g_texture = 0;
+GLuint g_waterTexture = 0;
 GLuint numTextures = 0;
 GLuint g_shader = 0;
 
@@ -149,8 +158,15 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 
 
 void initTerrain() {
-	g_terrain = new Terrain(vec2(0, 0));
-	g_terrain2 = new Terrain(vec2(0, 0));
+	g_terrain = new Terrain(1.0, rand() % 1000);
+	g_terrain2 = new Terrain(2.0, rand() % 1000);
+	g_terrain3 = new Terrain(1.2, rand() % 1000);
+	g_terrain4 = new Terrain(1.8, rand() % 1000);
+
+	g_ocean = new Ocean(1.0f);
+	g_ocean2 = new Ocean(1.0f);
+	g_ocean3 = new Ocean(1.0f);
+	g_ocean4 = new Ocean(1.0f);
 }
 
 // Sets up where and what the light is
@@ -189,6 +205,23 @@ void initTexture() {
 
 	// Finnaly, actually fill the data into our texture
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex1.w, tex1.h, tex1.glFormat(), GL_UNSIGNED_BYTE, tex1.dataPointer());
+
+	Image tex2("./work/res/textures/water.jpg");
+
+	glActiveTexture(GL_TEXTURE0); // Use slot 0, need to use GL_TEXTURE1 ... etc if using more than one texture PER OBJECT
+	glGenTextures(1, &g_waterTexture); // Generate texture ID
+	glBindTexture(GL_TEXTURE_2D, g_waterTexture); // Bind it as a 2D texture
+
+
+	// Setup sampling strategies
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Finnaly, actually fill the data into our texture
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex2.w, tex2.h, tex2.glFormat(), GL_UNSIGNED_BYTE, tex2.dataPointer());
 
 }
 
@@ -242,21 +275,41 @@ void render(int width, int height) {
 
 	setupCamera(width, height);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, g_texture);
+
 	//Render Terrain
 	g_terrain->renderTerrain();
-/*
-	glTranslatef(-126, 0, 0);
-	g_terrain->renderTerrain();
-	glTranslatef(126, 0, 0);
 
-	glTranslatef(-126, 0, -126);
+	glTranslatef(-255, 0, 0);
 	g_terrain2->renderTerrain();
-	glTranslatef(126, 0, 126);
+	glTranslatef(255, 0, 0);
 
-	glTranslatef(0, 0, -126);
-	g_terrain2->renderTerrain();
-	glTranslatef(0, 0, 126);
-*/
+	glTranslatef(-255, 0, -255);
+	g_terrain3->renderTerrain();
+	glTranslatef(255, 0, 255);
+
+	glTranslatef(0, 0, -255);
+	g_terrain4->renderTerrain();
+	glTranslatef(0, 0, 255);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, g_waterTexture);
+
+	g_ocean->renderOcean();
+
+	glTranslatef(-255, 0, 0);
+	g_ocean2->renderOcean();
+	glTranslatef(255, 0, 0);
+
+	glTranslatef(-255, 0, -255);
+	g_ocean3->renderOcean();
+	glTranslatef(255, 0, 255);
+
+	glTranslatef(0, 0, -255);
+	g_ocean4->renderOcean();
+	glTranslatef(0, 0, 255);
+
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
