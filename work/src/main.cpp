@@ -31,6 +31,12 @@ using namespace cgra;
 // Window
 //
 GLFWwindow* g_window;
+const int maxTiles = 1000;
+const int g_tileSize = 256;
+const int initNumTiles = 3;
+int numTiles = 3;
+Terrain* tTiles[maxTiles][maxTiles];
+Ocean* oTiles[maxTiles][maxTiles];
 
 Terrain *g_terrain= nullptr;
 Terrain *g_terrain2= nullptr;
@@ -58,8 +64,31 @@ float g_yaw = 15;
 float g_zoom = 1.0;
 
 //Key controlled camera values
-float g_forward = 0;
-float g_right = 0;
+float g_fVal = 512.0f;
+float g_rVal = -128.0f;
+float g_uVal = -256.0f;
+
+float g_panStep = 5.0f;
+float g_rotStep = 10.0f;
+
+
+float g_fTrans = 0.0f;
+float g_rTrans = 0.0f;
+float g_upPan = 0.0f;
+float g_rightPan = 0.0f;
+
+bool g_forward = false;
+bool g_right = false;
+bool g_back = false;
+bool g_left = false;
+
+bool g_up = false;
+bool g_down = false;
+
+bool g_panUp = false;
+bool g_panDown = false;
+bool g_panRight = false;
+bool g_panLeft = false;
 
 // Values and fields to showcase the use of shaders
 // Remove when modifying main.cpp for Assignment 3
@@ -69,6 +98,7 @@ GLuint g_texture = 0;
 GLuint g_waterTexture = 0;
 GLuint numTextures = 0;
 GLuint g_shader = 0;
+void genTile();
 
 
 // Mouse Button callback
@@ -122,28 +152,74 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// g_right += g_right;
 	// g_forward += g_forward;
 	if(key == GLFW_KEY_W && action == GLFW_PRESS){
-		g_forward += 0.1f;
+		g_up = true;
 	}
 	if(key == GLFW_KEY_W && action == GLFW_RELEASE){
-		// g_forward = 0.0f;
+		g_up = false;
 	}
 	if(key == GLFW_KEY_D && action == GLFW_PRESS){
-		g_right += 0.1f;
+		g_right = true;
 	}
 	if(key == GLFW_KEY_D && action == GLFW_RELEASE){
-		// g_right = 0.0f;
+		g_right = false;
 	}
 	if(key == GLFW_KEY_S && action == GLFW_PRESS){
-		g_forward += -0.1f;
+		g_down = true;
 	}
 	if(key == GLFW_KEY_S && action == GLFW_RELEASE){
-		// g_forward = 0.0f;
+		g_down = false;
 	}
 	if(key == GLFW_KEY_A && action == GLFW_PRESS){
-		g_right += -0.1f;
+		g_left = true;
 	}
 	if(key == GLFW_KEY_A && action == GLFW_RELEASE){
-		// g_right = 0.0f;
+		g_left = false;
+	}
+
+	if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS){
+		g_forward = true;
+	}
+	if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE){
+		g_forward = false;
+	}
+	if(key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS){
+		g_back = true;
+	}
+	if(key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE){
+		g_back = false;
+	}
+
+
+
+
+	if(key == GLFW_KEY_UP && action == GLFW_PRESS){
+		g_panUp = true;
+	}
+	if(key == GLFW_KEY_UP && action == GLFW_RELEASE){
+		g_panUp = false;
+	}
+	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+		g_panDown = true;
+	}
+	if(key == GLFW_KEY_DOWN && action == GLFW_RELEASE){
+		g_panDown = false;
+	}
+	if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS){
+		g_panRight = true;
+	}
+	if(key == GLFW_KEY_RIGHT && action == GLFW_RELEASE){
+		g_panRight = false;
+	}
+	if(key == GLFW_KEY_LEFT && action == GLFW_PRESS){
+		g_panLeft = true;
+	}
+	if(key == GLFW_KEY_LEFT && action == GLFW_RELEASE){
+		g_panLeft = false;
+	}
+
+
+	if(key == GLFW_KEY_F && action == GLFW_PRESS){
+		genTile();
 	}
 }
 
@@ -157,7 +233,28 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 }
 
 
+float RandomFloat(float a, float b) {
+    float random = ((float) rand()) / (float) RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
+}
+
+void genTile(){
+	for(int i = 0; i != numTiles+1; i++){
+		for(int j = 0; j != numTiles+1; j++){
+			if(i == numTiles || j == numTiles){
+				tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000);
+			}
+
+		}
+	}
+	numTiles += 1;
+}
+
+
 void initTerrain() {
+	/*
 	g_terrain = new Terrain(1.0, rand() % 1000);
 	g_terrain2 = new Terrain(2.0, rand() % 1000);
 	g_terrain3 = new Terrain(1.2, rand() % 1000);
@@ -167,6 +264,13 @@ void initTerrain() {
 	g_ocean2 = new Ocean(1.0f);
 	g_ocean3 = new Ocean(1.0f);
 	g_ocean4 = new Ocean(1.0f);
+	*/
+	for(int i = 0; i < initNumTiles; i++){
+		for(int j = 0; j < initNumTiles; j++){
+			tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000);
+			// oTiles[i][j] = new Ocean(1.0f);
+		}
+	}
 }
 
 // Sets up where and what the light is
@@ -250,8 +354,49 @@ void setupCamera(int width, int height) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+
+	if(g_forward){
+		g_fVal += g_panStep;
+	}
+	if(g_back){
+		g_fVal -= g_panStep;
+	}
+	if(g_right){
+		g_rVal += g_rotStep;
+	}
+	if(g_left){
+		g_rVal -= g_rotStep;
+	}
+	if(g_up){
+		g_uVal += g_rotStep;
+	}
+	if(g_down){
+		g_uVal -= g_rotStep;
+	}
+	if(g_panUp){
+		g_upPan += g_panStep;
+	}
+	if(g_panDown){
+		g_upPan -= g_panStep;
+	}
+	if(g_panRight){
+		g_rightPan += g_panStep;
+	}
+	if(g_panLeft){
+		g_rightPan -= g_panStep;
+	}
+
+
 	// glTranslatef(0, 0, -50 * g_zoom);
-	glTranslatef( 1*g_right, 1*g_forward, -50 * g_zoom);
+	// glTranslatef( g_right, g_forward, -50 * g_zoom);
+	/*
+	gluLookAt(	g_rightPan, g_upPan, g_fVal,// position of camera
+			// g_rVal + g_rightPan,  g_fVal + g_upPan, g_uVal,// position to look at
+			  g_rightPan /*- g_rightPan,  g_upPan - 0.5*g_upPan, g_uVal - g_uVal,// position to look at
+
+			0.0, 1.0, 0.0);// up relative to camera
+			*/
+	glTranslatef(g_rightPan, g_upPan , -50 * g_zoom);
 	glRotatef(g_pitch, 1, 0, 0);
 	glRotatef(g_yaw, 0, 1, 0);
 
@@ -262,6 +407,7 @@ void setupCamera(int width, int height) {
 // Draw function
 //
 void render(int width, int height) {
+
 
 	// Grey/Blueish background
 	glClearColor(0.3f, 0.3f, 0.4f, 1.0f);
@@ -275,10 +421,35 @@ void render(int width, int height) {
 
 	setupCamera(width, height);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, g_texture);
+	// glActiveTexture(GL_TEXTURE0);
+	// glBindTexture(GL_TEXTURE_2D, g_texture);
 
 	//Render Terrain
+	// int y;
+	// int x;
+	for(int i = 0; i < numTiles; i++){
+		for(int j = 0; j < numTiles; j++){
+			/*
+			x = i;
+			y = j;
+			if(x % 2 > 0)
+				x = -i;
+			if(y % 2 > 0)
+				y = -j;
+				*/
+			if(tTiles[i][j]){
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, g_texture);
+				glTranslatef((i * g_tileSize) -1, 0, (j * g_tileSize) -1);
+				tTiles[i][j]->renderTerrain();
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, g_waterTexture);
+				// oTiles[i][j]->renderOcean();
+				glTranslatef((-i * g_tileSize) -1, 0, (-j * g_tileSize) -1);
+				}
+		}
+	}
+	/*
 	g_terrain->renderTerrain();
 
 	glTranslatef(-255, 0, 0);
@@ -309,6 +480,7 @@ void render(int width, int height) {
 	glTranslatef(0, 0, -255);
 	g_ocean4->renderOcean();
 	glTranslatef(0, 0, 255);
+	*/
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
@@ -337,7 +509,8 @@ int main(int argc, char **argv) {
 	glfwGetVersion(&glfwMajor, &glfwMinor, &glfwRevision);
 
 	// Create a windowed mode window and its OpenGL context
-	g_window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+	// g_window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+	g_window = glfwCreateWindow(1366, 768, "Hello World", nullptr, nullptr);
 	if (!g_window) {
 		cerr << "Error: Could not create GLFW window" << endl;
 		abort(); // Unrecoverable error

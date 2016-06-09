@@ -44,7 +44,6 @@ Terrain::Terrain(float h, float s){
   int P[B + B + 2];
   float G[B + B + 2][3];
   memcpy (&p, &P, sizeof(P));
-  cout <<"two " << p[50] <<endl;
   memcpy (&g, &G, sizeof(G));
   first = true;
   createDisplayListTile();

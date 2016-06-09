@@ -30,7 +30,7 @@ void Ocean::createDisplayListTile() {
 	if (m_displayListPoly) glDeleteLists(m_displayListPoly, 1);
 
 	// Create a new list
-	cout << "Creating Terrain Tile" << endl;
+	cout << "Creating Ocean Tile" << endl;
 	m_displayListPoly = glGenLists(1);
 	glNewList(m_displayListPoly, GL_COMPILE);
 
@@ -179,7 +179,7 @@ glBegin(GL_TRIANGLES);
   glEnd();
   glEndList();
 
-	cout << "Finished Creating Terrain Tile" << endl;
+	cout << "Finished Creating Ocean Tile" << endl;
 }
 
 void Ocean::renderOcean(){
