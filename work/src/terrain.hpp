@@ -32,7 +32,7 @@ class Terrain {
 private:
   GLuint m_displayListPoly; // DisplayList for Polygon
   int tileSize = 256;
-  int heightMultiplier = 50;
+  // int heightMultiplier = 50;
 
   float ridgedMultifractal(cgra::vec3, float, float, float, float, float);
   float noise3(cgra::vec3);
@@ -40,7 +40,7 @@ private:
   static void noiseInit();
 
 public:
-  Terrain(float, float);
+  Terrain(float, float, float);
   ~Terrain();
 
   void renderTerrain();

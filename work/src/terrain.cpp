@@ -28,6 +28,7 @@ static float *exponent_array;
 // endNoise
 float fracDim;
 float seed;
+float heightMultiplier = 50;
 
 #define noiseSetup(i, b0, b1, r0, r1) \
   t = i + 10000.; \
@@ -37,9 +38,10 @@ float seed;
   r1 = r0 -1.;
 
 
-Terrain::Terrain(float h, float s){
+Terrain::Terrain(float h, float s, float hm){
   fracDim = h;
   seed = s;
+  heightMultiplier = hm;
   start = 1;
   int P[B + B + 2];
   float G[B + B + 2][3];
@@ -225,6 +227,8 @@ void Terrain::renderTerrain(){
  glEnable(GL_COLOR_MATERIAL);
 }
 
+/*Texturing and modeling: aprocedural approach"
+* by D.S.Ebert, F K. Musgrave, D. Peachey, K. Perlin, S. Worley*/
 float Terrain::noise3(vec3 point){
   int bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
   float rx0, rx1, ry0, ry1, rz0, rz1, *q, sx, sy, sz, a, b, c, d, t, u, v;

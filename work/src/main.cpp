@@ -90,6 +90,8 @@ bool g_panDown = false;
 bool g_panRight = false;
 bool g_panLeft = false;
 
+bool g_drawWater = false;
+
 // Values and fields to showcase the use of shaders
 // Remove when modifying main.cpp for Assignment 3
 //
@@ -221,6 +223,12 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	if(key == GLFW_KEY_F && action == GLFW_PRESS){
 		genTile();
 	}
+	if(key == GLFW_KEY_G && action == GLFW_PRESS){
+		if(g_drawWater)
+			g_drawWater = false;
+		else
+			g_drawWater = true;
+	}
 }
 
 
@@ -241,16 +249,27 @@ float RandomFloat(float a, float b) {
 }
 
 void genTile(){
+	int done = 0;
+	int stepped = 0;
 	for(int i = 0; i != numTiles+1; i++){
 		for(int j = 0; j != numTiles+1; j++){
 			if(i == numTiles || j == numTiles){
-				tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000);
+				if(!tTiles[i][j] && !done && !stepped){
+					tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000, RandomFloat(30, 60));
+					oTiles[i][j] = new Ocean(1.0f);
+					stepped = 1;
+					if(i == numTiles && j == numTiles)
+						done = 1;
+				}
+
 				// tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000);
 			}
 
 		}
 	}
-	numTiles += 1;
+
+	if(done)
+		numTiles += 1;
 }
 
 
@@ -268,8 +287,8 @@ void initTerrain() {
 	*/
 	for(int i = 0; i < initNumTiles; i++){
 		for(int j = 0; j < initNumTiles; j++){
-			tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000);
-			// oTiles[i][j] = new Ocean(1.0f);
+			tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000, RandomFloat(30, 60));
+			oTiles[i][j] = new Ocean(1.0f);
 		}
 	}
 }
@@ -429,8 +448,8 @@ void render(int width, int height) {
 	//Render Terrain
 	// int y;
 	// int x;
-	for(int i = 0; i < numTiles; i++){
-		for(int j = 0; j < numTiles; j++){
+	for(int i = 0; i < numTiles+1; i++){
+		for(int j = 0; j < numTiles+1; j++){
 			/*
 			x = i;
 			y = j;
@@ -446,12 +465,12 @@ void render(int width, int height) {
 				tTiles[i][j]->renderTerrain();
 				glActiveTexture(GL_TEXTURE0);
 
-				if(oTiles[i][j]){
+				if(oTiles[i][j] && g_drawWater){
 					glBindTexture(GL_TEXTURE_2D, g_waterTexture);
 					oTiles[i][j]->renderOcean();
 
 				}
-				glTranslatef((-i * g_tileSize) -1, 0, (-j * g_tileSize) -1);
+				glTranslatef(-((i * g_tileSize) -1), 0, -((j * g_tileSize) -1));
 			}
 		}
 	}
@@ -503,6 +522,7 @@ void APIENTRY debugCallbackARB(GLenum, GLenum, GLuint, GLenum, GLsizei, const GL
 //Main program
 //
 int main(int argc, char **argv) {
+
 
 	// Initialize the GLFW library
 	if (!glfwInit()) {
