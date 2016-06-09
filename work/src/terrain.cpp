@@ -381,7 +381,7 @@ float Terrain::noise3(vec3 point){
   }
 
   /*Create a psudorandom permutation of [1..B]*/
-  for(i = 0; i < B; i++){
+  for(i = 0; i < sizeof(p)/sizeof(*p); i++){
     p[i] = i;
   }
   for(i = B; i > 0; i -= 2){
