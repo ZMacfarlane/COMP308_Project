@@ -408,7 +408,8 @@ void setupCamera(int width, int height) {
 // Draw function
 //
 void render(int width, int height) {
-
+    // Make the viewport the whole screen
+    glViewport(0, 0, width, height);
 
 	// Grey/Blueish background
 	glClearColor(0.3f, 0.3f, 0.4f, 1.0f);
