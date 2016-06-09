@@ -245,6 +245,7 @@ void genTile(){
 		for(int j = 0; j != numTiles+1; j++){
 			if(i == numTiles || j == numTiles){
 				tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000);
+				// tTiles[i][j] = new Terrain(RandomFloat(0.8, 2.5), rand() % 1000);
 			}
 
 		}
@@ -437,16 +438,20 @@ void render(int width, int height) {
 			if(y % 2 > 0)
 				y = -j;
 				*/
-			if(tTiles[i][j]){
+			if(tTiles[i][j] ){
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, g_texture);
 				glTranslatef((i * g_tileSize) -1, 0, (j * g_tileSize) -1);
 				tTiles[i][j]->renderTerrain();
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, g_waterTexture);
-				// oTiles[i][j]->renderOcean();
-				glTranslatef((-i * g_tileSize) -1, 0, (-j * g_tileSize) -1);
+
+				if(oTiles[i][j]){
+					glBindTexture(GL_TEXTURE_2D, g_waterTexture);
+					oTiles[i][j]->renderOcean();
+
 				}
+				glTranslatef((-i * g_tileSize) -1, 0, (-j * g_tileSize) -1);
+			}
 		}
 	}
 	/*
