@@ -153,82 +153,47 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// 	<< "action=" << action << "mods=" << mods << endl;
 	// g_right += g_right;
 	// g_forward += g_forward;
-	if(key == GLFW_KEY_W && action == GLFW_PRESS){
-		g_up = true;
-	}
-	if(key == GLFW_KEY_W && action == GLFW_RELEASE){
-		g_up = false;
-	}
-	if(key == GLFW_KEY_D && action == GLFW_PRESS){
-		g_right = true;
-	}
-	if(key == GLFW_KEY_D && action == GLFW_RELEASE){
-		g_right = false;
-	}
-	if(key == GLFW_KEY_S && action == GLFW_PRESS){
-		g_down = true;
-	}
-	if(key == GLFW_KEY_S && action == GLFW_RELEASE){
-		g_down = false;
-	}
-	if(key == GLFW_KEY_A && action == GLFW_PRESS){
-		g_left = true;
-	}
-	if(key == GLFW_KEY_A && action == GLFW_RELEASE){
-		g_left = false;
-	}
-
-	if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS){
-		g_forward = true;
-	}
-	if(key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE){
-		g_forward = false;
-	}
-	if(key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS){
-		g_back = true;
-	}
-	if(key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE){
-		g_back = false;
-	}
-
-
-
-
-	if(key == GLFW_KEY_UP && action == GLFW_PRESS){
-		g_panUp = true;
-	}
-	if(key == GLFW_KEY_UP && action == GLFW_RELEASE){
-		g_panUp = false;
-	}
-	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
-		g_panDown = true;
-	}
-	if(key == GLFW_KEY_DOWN && action == GLFW_RELEASE){
-		g_panDown = false;
-	}
-	if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS){
-		g_panRight = true;
-	}
-	if(key == GLFW_KEY_RIGHT && action == GLFW_RELEASE){
-		g_panRight = false;
-	}
-	if(key == GLFW_KEY_LEFT && action == GLFW_PRESS){
-		g_panLeft = true;
-	}
-	if(key == GLFW_KEY_LEFT && action == GLFW_RELEASE){
-		g_panLeft = false;
-	}
-
-
-	if(key == GLFW_KEY_F && action == GLFW_PRESS){
-		genTile();
-	}
-	if(key == GLFW_KEY_G && action == GLFW_PRESS){
-		if(g_drawWater)
-			g_drawWater = false;
-		else
-			g_drawWater = true;
-	}
+        switch(key)
+        {
+            case GLFW_KEY_W:
+                g_up = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_D:
+                g_right = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_S:
+                g_down = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_A:
+                g_left = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
+                g_forward = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_LEFT_CONTROL:
+                g_back = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_UP:
+                g_panUp = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_DOWN:
+                g_panDown = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_RIGHT:
+                g_panRight = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_LEFT:
+                g_panLeft = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_F:
+                if (action == GLFW_PRESS)
+                    genTile();
+                break;
+            case GLFW_KEY_G:
+                if (action == GLFW_PRESS)
+                    g_drawWater = !g_drawWater;
+                break;
+        }
 }
 
 
