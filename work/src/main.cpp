@@ -174,16 +174,16 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
                 g_back = (action == GLFW_PRESS);
                 break;
             case GLFW_KEY_UP:
-                g_panUp = (action == GLFW_PRESS);
+                g_panUp = (action == GLFW_PRESS || action == GLFW_REPEAT);
                 break;
             case GLFW_KEY_DOWN:
-                g_panDown = (action == GLFW_PRESS);
+                g_panDown = (action == GLFW_PRESS || action == GLFW_REPEAT);
                 break;
             case GLFW_KEY_RIGHT:
-                g_panRight = (action == GLFW_PRESS);
+                g_panRight = (action == GLFW_PRESS || action == GLFW_REPEAT);
                 break;
             case GLFW_KEY_LEFT:
-                g_panLeft = (action == GLFW_PRESS);
+                g_panLeft = (action == GLFW_PRESS || action == GLFW_REPEAT);
                 break;
             case GLFW_KEY_F:
                 if (action == GLFW_PRESS)
